@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tr.muhurath.app.muhurat">
+    package="com.tr.muhurath.app.muhurat"
+    android:versionCode="@string/versionCode"
+    android:versionName="@string/versionName">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -43,6 +45,15 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".Muhurat">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tr.muhurath.app.muhurat.Muhurat" />
+        </activity>
+        <activity
+            android:name=".FAQActivity"
+            android:label="@string/title_activity_faq"
+            android:parentActivityName=".Muhurat"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tr.muhurath.app.muhurat.Muhurat" />

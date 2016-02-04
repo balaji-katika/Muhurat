@@ -2,9 +2,13 @@ package com.tr.muhurath.app.muhurat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import android.support.v7.widget.ShareActionProvider;
 
 /**
  * Activity displaying the Muhurat Summary
@@ -31,8 +36,10 @@ import java.util.TimeZone;
 public class MuhuratSummaryActivity extends AppCompatActivity {
 
     public static final String LBL_DATE_DISPLAY = "E dd-MMM-yyyy";
+    public static final String TAG = MuhuratSummaryActivity.class.getName();
 
     private StringBuffer summaryText = new StringBuffer();
+    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,18 +112,20 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
 
         //Display Sun Rise
         kalHolder = (TextView) findViewById(R.id.txtMuhuraSunRise);
-        msg = "Sun Rise : " + calculator.getOfficialSunriseForDate(calendar);
+        msg = "Sun Rise : " + DateUtils.get12HourFormat(calculator.getOfficialSunriseForDate(calendar));
         kalHolder.setText(msg);
         summaryText.append(msg + "<br>");
 
         //Display Sun Set
         kalHolder = (TextView) findViewById(R.id.txtMuhuraSunSet);
-        msg = "Sun Set : " + calculator.getOfficialSunsetForDate(calendar);
+        msg = "Sun Set  : " + DateUtils.get12HourFormat(calculator.getOfficialSunsetForDate(calendar));
         kalHolder.setText(msg);
         summaryText.append(msg + "<br>");
 
         //Set back button on Tool bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //setShareIntent();
+        Log.d(TAG, "dummy");
     }
 
     private void initShareBtnListener() {
@@ -131,5 +140,70 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(sharingIntent, getResources().getText(R.string.send_to)));
             }
         });
+    }
+
+    /**
+     * Set Share Intent for Share toolbar button
+     */
+    private void setShareIntent(Intent shareIntent){
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(shareIntent);
+            Log.d(TAG, "setShareIntent - Share Action Provider is not null");
+        }
+        else {
+            Log.d(TAG, "setShareIntent - Share Action Provider is null");
+        }
+    }
+
+    /**
+     * Create the Share Intent
+     * @return
+     */
+    private Intent createShareIntent() {
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/html");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml("<p>Muhurath</p>"));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>" + summaryText.toString() + "</p>"));
+        return sharingIntent;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "Dummy2");
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_muhurat_summary, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        //shareActionProvider = (ShareActionProvider)item.getActionProvider();
+        setShareIntent(createShareIntent());
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
+            return true;
+        }
+        else if (id == R.id.action_faq) {
+            startActivity(new Intent(this, FAQActivity.class));
+            return true;
+        }
+        else if (id == R.id.menu_item_share) {
+            Log.d(TAG,"onOptionsItemSelected - share selected");
+            setShareIntent(createShareIntent());
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -2,6 +2,7 @@
     <string name="app_name">Muhurat</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
+    <string name="action_faq">FAQs</string>
     <string name="calc_btn_lbl">Calculate</string>
     <string name="select_lbl">Select a date</string>
     <string name="title_activity_muhurat_summary">Muhurat</string>
@@ -20,91 +21,66 @@
         "And my two little daughters Tanvisha and Rithvika. You provided the inspiration"
         " necessary for me to complete this process and also sacrificed immensely along the way.\n\n"
     </string>
+    <string name="about_faq_note">
+    "Please note that below FAQs are for informational only. You are recommended to contact experts for exact meaning"
+    </string>
+    <string name="about_faq_gulika_qn">
+    "What is Gulika ?"
+    </string>
+    <string name="about_faq_gulika_ans">
+        "It is believed that any activity carried out during Gulika (Flowering Time) period will be repeated once again. "
+        "So its an auspicious time for starting activities like building a house, buying assets or vehicles. Marriage should "
+        "not be conducted during this period for obvious reasons. And no dead body should not be taken out of the house to the "
+        "cremation ground during Gulika."
+    </string>
+    <string name="about_faq_rahu_qn">
+    "What is Rahu Kala?"
+    </string>
+    <string name="about_faq_rahu_ans">
+        "Any activity or journey, whether of short or long distance, initiated or undertaken during Rahu(Dragon’s Head) Kaalam is "
+        "believed to meet a significant degree of failure, lack of success ,delay, postponement or no conclusive result. "
+        "To counteract Rahu Kaalam people avoid commencing important money-related or travel activities, during this time. "
+        "They leave their current location or have their meetings, or start their activities earlier than or after the Rahu Kaalam "
+        "period.Of course,you could use Rahu Kaalam to your advantage if you want postponements and delays.Also its considered very "
+        "auspicious to perfom Durga pooja during Rahu Kaalam"
+    </string>
+    <string name="about_faq_yama_qn">
+    "What is Yama Kala?"
+    </string>
+    <string name="about_faq_yama_ans">
+        "Yamagandam means death time.Only death ceremonies are performed during Yamagandam. Any activity commenced during this time "
+        "invites the ‘death’ of the work or energies relating to that work. So activities during Yamagandam leads to a failure "
+        "or destruction of the end-result. Avoid commencing important, money-related or travel activities, during this time. "
+        "Leave your current location or have your meeting, or start your activity earlier than or after the Yamagandam time. "
+        "Don’t be tempted to use this time-slot to end some issue as it is dangerous to plan an activity during this time as "
+        "the end- result could be a failure for you."
+    </string>
+    <string name="about_faq_shoolam_qn">
+    "What is Shoolam?"
+    </string>
+    <string name="about_faq_shoolam_ans">
+        "Travel from an area of residence or where one has stayed the night, heading in the Shoolam direction, it is believed, "
+        "creates a piercing and flowing away of karmic and personal energy in all areas of life and activities. So Shoolam direction "
+        "is to be avoided as the first outbound journey of the day from one’s  home or temporary residence. To counteract Shoolam "
+        "some people avoid all journeys heading towards the Shoolam direction of the day. "
+    </string>
+    <string name="about_faq_app_qn">
+        "Your Application seems to be showing timings different from other standard websites/apps ? For e.g Few "
+        "websites/apps report Yama ganda occurs from 4:30 PM till 6:00 PM on Sunday"
+    </string>
+    <string name="about_faq_app_ans">
+        "Our Application attempts to show as accurate times (in mins) as possible. Please note that Kaala's differ across location "
+        "based on longitude/latitude and sunrise/sunset at that location. Our application considers location of the user and the "
+        "sunrise/sunset timings of that location"
+    </string>
+    <string name="about_faq_how_qn">
+        "How do you determine/calculate Sunrise/Sunset for the location ?"
+    </string>
+    <string name="about_faq_how_ans">
+        "Our algorithm is based on http://williams.best.vwh.net/sunrise_sunset_algorithm.htm"
+    </string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
-
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
-
-        "Bold, graphic, intentional.\n\n"
-
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
-
-        "Motion provides meaning.\n\n"
-
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
-
-        "3D world.\n\n"
-
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
-
-        "Light and shadow.\n\n"
-
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
-
-        "Resting elevation.\n\n"
-
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
-
-        "Component elevations.\n\n"
-
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
         "On the layout level, design your app layout to minimize opportunities for interference. "
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
@@ -168,4 +144,8 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <string name="versionCode">2</string>
+    <string name="versionName">1.1</string>
+    <string name="title_activity_faq">FAQs</string>
 </resources>
