@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Utility for Date Operations
@@ -70,6 +71,19 @@ public class DateUtils {
         return outputFormat.format(date);
     }
 
+    /**
+     * Determines if it is Indian Timezone
+     * @return - True/False
+     */
+    public static boolean isIndianTimeZone() {
+        String timezone = TimeZone.getDefault().getID();
+        for (String ist : AppConstants.IST_TIME_ZONE) {
+            if (timezone.equalsIgnoreCase(ist)) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Get the direction of the Shoolam for the given day
      * @param date - {@link Date} input

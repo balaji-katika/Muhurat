@@ -9,8 +9,9 @@ public class AppConfiguration {
     private static AppConfiguration _instance = null;
     public static double longitude;
     public static double latitude;
-    private static Object _lock = new Object();
+    private static final Object _lock = new Object();
     private boolean locationAlertShown = false;
+    private boolean locationPermissionAlertShown = false;
     /**
      * Private constructor
      */
@@ -51,6 +52,23 @@ public class AppConfiguration {
     public boolean getLocationAlertShown() {
         return locationAlertShown;
     }
+
+    /**
+     * Getter for {@link AppConfiguration#locationPermissionAlertShown}
+     * @return - True if permissions alert shown. False otherwise
+     */
+    public boolean getLocationPermissionAlertShown() {
+        return locationPermissionAlertShown;
+    }
+
+    /**
+     * Setter for {@link AppConfiguration#locationPermissionAlertShown}
+     * @param shown - True if permission Alert shown. False otherwise
+     */
+    public void setLocationPermissionAlertShown(boolean shown) {
+        this.locationPermissionAlertShown = shown;
+    }
+
     /**
      * Set the location for the application
      * @param longi - Longitue

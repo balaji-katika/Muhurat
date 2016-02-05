@@ -66,6 +66,7 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
         //Date sunRise= SunRiseSetUtil.getSunRise(selectedDate);
         //Date sunSet=SunRiseSetUtil.getSunSet(selectedDate);
         Location loc = new Location(AppConfiguration.latitude, AppConfiguration.longitude);
+        Log.d(TAG, TimeZone.getDefault().getID());
         SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(loc, TimeZone.getDefault().getID());
         Date sunRise = SunRiseSetUtil.getSunRiseLocationBased(selectedDate, calculator);
         Date sunSet = SunRiseSetUtil.getSunSetLocationBased(selectedDate, calculator);
