@@ -8,6 +8,7 @@
     android:orientation="vertical"
     android:background="@color/colorBackground"
     android:divider="@color/colorAccent"
+    android:scrollbars="vertical"
     tools:context="com.tr.muhurath.app.muhurat.Muhurat">
 
     <android.support.design.widget.AppBarLayout
@@ -44,6 +45,7 @@
         android:layout_height="wrap_content"
         android:datePickerMode="spinner"
         android:calendarViewShown="false"
+        android:layout_marginLeft="15dp"
         android:endYear="2018"
         android:startYear="2015"
         android:id="@+id/datePicker" />
@@ -53,5 +55,6 @@
         android:layout_height="wrap_content"
         android:text="@string/calc_btn_lbl"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="25dp"/>
+        android:layout_marginLeft="25dp"
+        />
 </LinearLayout>

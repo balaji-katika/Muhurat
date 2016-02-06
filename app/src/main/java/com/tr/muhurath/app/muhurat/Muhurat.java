@@ -2,12 +2,15 @@ package com.tr.muhurath.app.muhurat;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PermissionInfo;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,7 +35,7 @@ import com.tr.muhurath.app.muhurat.utils.LocationUtil;
  */
 public class Muhurat extends AppCompatActivity implements LocationListener {
     Button button;
-    private LocationManager locationManager;
+    private LocationManager locationService;
     private String provider;
     private String TAG = "Muhurat";
 
@@ -51,7 +54,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         Location location = null;
         if (provider != null && (LocationManager.GPS_PROVIDER.equals(provider) || LocationManager.NETWORK_PROVIDER.equals(provider))) {
             try {
-                location = locationManager.getLastKnownLocation(provider);
+                location = locationService.getLastKnownLocation(provider);
                 AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
                 Log.d(TAG, "onProviderEnabled - Location Provider enable. New location - " + location);
             } catch (SecurityException securityException) {
@@ -71,7 +74,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         super.onResume();
         if (provider != null) {
             try {
-                locationManager.requestLocationUpdates(provider, AppConstants.LOC_MIN_TIME_INTERVAL, AppConstants.LOC_MIN_DISTANCE, this);
+                locationService.requestLocationUpdates(provider, AppConstants.LOC_MIN_TIME_INTERVAL, AppConstants.LOC_MIN_DISTANCE, this);
             } catch (SecurityException securityException) {
                 Log.w(TAG, "onResume - User has not given permission for Location Service");
             }
@@ -83,7 +86,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     protected void onPause() {
         super.onPause();
         try {
-            locationManager.removeUpdates(this);
+            locationService.removeUpdates(this);
         }
         catch (SecurityException securityException) {
             Log.w(TAG, "onPause - User has not given permission for Location Service");
@@ -110,11 +113,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
      */
     private void displayLocationPermissionsAlert() {
         if (!AppConfiguration.getInstance().getLocationPermissionAlertShown()) {
-            if (DateUtils.isIndianTimeZone()) {
-                showLastKnownPermissionToast();
-            } else {
-                showLocationPermissionAlert();
-            }
+           showLastKnownPermissionToast();
         }
     }
 
@@ -126,7 +125,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             if (DateUtils.isIndianTimeZone()) {
                 showLastKnowLocationToast();
             } else {
-                showLocationDisableAlert();
+                showLocationSettingsDialog();
             }
         }
     }
@@ -136,54 +135,46 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     private void gatherLocationDetails() {
         // Get the location manager
         try {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationService = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         } catch (Exception exception) {
-            //IllegalArgumentsException could occur here
+            //IllegalArgumentsException could occur here for invalid service name
             Log.e(TAG, "gatherLocationDetails - " + exception.getMessage());
         }
 
-        if (locationManager != null) {
-            // Define the criteria how to select the location provider -> use default
-            Criteria criteria = new Criteria();
-            Log.d(TAG, "Enabled - " + LocationUtil.isLocationEnabled(locationManager));
-            if(!LocationUtil.isLocationEnabled(locationManager)) {
-                displayLocationSettingsAlert();
-            }
-
-            provider = locationManager.getBestProvider(criteria, false);
-            try {
-                Location location = null;
-                if (provider != null) {
-                    //getBestProvider is returning null on Marshmallow
-                    location = locationManager.getLastKnownLocation(provider);
-                } else {
-                    displayLocationSettingsAlert();
-                    location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                }
-                if (location != null) {
-                    Log.d(TAG, "gatherLocationDetails - LocationProvider is " + location.getProvider());
-                    AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
-                } else {
-                    displayLocationSettingsAlert();
-                    Log.d(TAG, "gatherLocationDetails - Unable to retrieve the last known location");
-                    AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
-                }
-            } catch (SecurityException securityException) {
-                displayLocationPermissionsAlert();
-                Log.w(TAG, "gatherLocationDetails - User has not given permission for Location Service");
-                AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
-            } catch (NullPointerException nullPointerException) {
-                Log.w(TAG, "gatherLocationDetails - NullPointerException received for Location Service");
-                AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
-            } catch (Exception exception) {
-                Log.w(TAG, "gatherLocationDetails - Exception received for Location Service");
-                AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
-            }
+        if (locationService == null) {
+            //Happens for Marshmallow. By default access to system service are disabled
+            Log.w(TAG, "gatherLocationDetails - Location Service not accessible");
+            displayLocationPermissionsAlert();
+            AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
         }
         else {
-            Log.w(TAG, "gatherLocationDetails - LocationManager Service not enabled");
-            AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
-            showLastKnownPermissionToast();
+            Location location = null;
+            provider = LocationUtil.getBestProvider(locationService);
+            if (provider == null) {
+                //Location Settings are Off
+                displayLocationSettingsAlert();
+            }
+            else {
+                try {
+                    location = locationService.getLastKnownLocation(provider);
+                }
+                catch (SecurityException securityException) {
+                    displayLocationPermissionsAlert();
+                }
+                catch (Exception exception){
+                    //Nothing to do
+                    location = null;
+                }
+            }
+            if (location == null) {
+                //Pass an empty string for the provider
+                location = new Location("");
+                //Set the default location as configured in the App
+                location.setLatitude(AppConstants.DEF_LATITUDE);
+                location.setLongitude(AppConstants.DEF_LONGITUDE);
+
+            }
+            AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
         }
     }
 
@@ -194,6 +185,12 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         Toast.makeText(this, "Permission to use location settings missing for Muhurat. Kindly give permissions",
                 Toast.LENGTH_LONG).show();
         AppConfiguration.getInstance().setLocationPermissionAlertShown(Boolean.TRUE);
+    }
+
+    private void showUnableToAccessLocationSettingsToast() {
+        Toast.makeText(this, "Unable to access location settings in your phone",
+                Toast.LENGTH_LONG).show();
+        AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
     }
 
     /**
@@ -212,17 +209,22 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(AppMessages.MSG_PERMISSION_DLG_TITLE)
                 .setMessage(AppMessages.MSG_PERMISSION_DLG_MSG)
-                .setNegativeButton(AppMessages.MSG_ENABLE_PERMISSION, new DialogInterface.OnClickListener() {
+                .setPositiveButton(AppMessages.MSG_ENABLE_PERMISSION, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                         Intent manageAppIntent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-                        startActivity(manageAppIntent);
+                        if (manageAppIntent.getAction() != null) {
+                            startActivity(manageAppIntent);
+                        } else {
+                            //When application settings are not available
+                            showLastKnownPermissionToast();
+                        }
                     }
                 })
-                .setPositiveButton(AppMessages.MSG_IGNORE, new DialogInterface.OnClickListener() {
+                .setNegativeButton(AppMessages.MSG_IGNORE, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        showLocationPermissionAlert();
+                        showLastKnownPermissionToast();
                     }
                 });
         dialog.show();
@@ -231,18 +233,22 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     /**
      * Display Location Settings alert
      */
-    private void showLocationDisableAlert() {
+    private void showLocationSettingsDialog() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(AppMessages.MSG_LOC_ENABLE)
                 .setMessage(AppMessages.MSG_LOC_DLG_MSG)
-                .setNegativeButton(AppMessages.MSG_LOC_ENABLE, new DialogInterface.OnClickListener() {
+                .setPositiveButton(AppMessages.MSG_LOC_ENABLE, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                         Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(locationIntent);
+                        if (locationIntent.getAction() != null) {
+                            startActivity(locationIntent);
+                        } else {
+                            showUnableToAccessLocationSettingsToast();
+                        }
                     }
                 })
-                .setPositiveButton(AppMessages.MSG_LOC_LAST_KNOWN, new DialogInterface.OnClickListener() {
+                .setNegativeButton(AppMessages.MSG_LOC_LAST_KNOWN, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                         showLastKnowLocationToast();

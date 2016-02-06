@@ -120,8 +120,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Share via.."
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
         android:id="@+id/shareButton"
         android:background="@color/colorShareButton"/>
 
