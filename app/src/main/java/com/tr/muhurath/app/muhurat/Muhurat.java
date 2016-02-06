@@ -2,15 +2,11 @@ package com.tr.muhurath.app.muhurat;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PermissionInfo;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,7 +31,7 @@ import com.tr.muhurath.app.muhurat.utils.LocationUtil;
  */
 public class Muhurat extends AppCompatActivity implements LocationListener {
     Button button;
-    private LocationManager locationService;
+    private LocationManager locationManager;
     private String provider;
     private String TAG = "Muhurat";
 
@@ -54,7 +50,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         Location location = null;
         if (provider != null && (LocationManager.GPS_PROVIDER.equals(provider) || LocationManager.NETWORK_PROVIDER.equals(provider))) {
             try {
-                location = locationService.getLastKnownLocation(provider);
+                location = locationManager.getLastKnownLocation(provider);
                 AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
                 Log.d(TAG, "onProviderEnabled - Location Provider enable. New location - " + location);
             } catch (SecurityException securityException) {
@@ -74,7 +70,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         super.onResume();
         if (provider != null) {
             try {
-                locationService.requestLocationUpdates(provider, AppConstants.LOC_MIN_TIME_INTERVAL, AppConstants.LOC_MIN_DISTANCE, this);
+                locationManager.requestLocationUpdates(provider, AppConstants.LOC_MIN_TIME_INTERVAL, AppConstants.LOC_MIN_DISTANCE, this);
             } catch (SecurityException securityException) {
                 Log.w(TAG, "onResume - User has not given permission for Location Service");
             }
@@ -86,7 +82,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     protected void onPause() {
         super.onPause();
         try {
-            locationService.removeUpdates(this);
+            locationManager.removeUpdates(this);
         }
         catch (SecurityException securityException) {
             Log.w(TAG, "onPause - User has not given permission for Location Service");
@@ -133,15 +129,16 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
      * Gather Location Details using Location Service
      */
     private void gatherLocationDetails() {
+        displayLocationSettingsAlert();
         // Get the location manager
         try {
-            locationService = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         } catch (Exception exception) {
             //IllegalArgumentsException could occur here for invalid service name
             Log.e(TAG, "gatherLocationDetails - " + exception.getMessage());
         }
 
-        if (locationService == null) {
+        if (locationManager == null) {
             //Happens for Marshmallow. By default access to system service are disabled
             Log.w(TAG, "gatherLocationDetails - Location Service not accessible");
             displayLocationPermissionsAlert();
@@ -149,14 +146,10 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         }
         else {
             Location location = null;
-            provider = LocationUtil.getBestProvider(locationService);
-            if (provider == null) {
-                //Location Settings are Off
-                displayLocationSettingsAlert();
-            }
-            else {
+            provider = LocationUtil.getBestProvider(locationManager);
+            if (provider != null) {
                 try {
-                    location = locationService.getLastKnownLocation(provider);
+                    location = locationManager.getLastKnownLocation(provider);
                 }
                 catch (SecurityException securityException) {
                     displayLocationPermissionsAlert();
@@ -167,6 +160,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                 }
             }
             if (location == null) {
+                showIndiaLocationAssumptionToast();
                 //Pass an empty string for the provider
                 location = new Location("");
                 //Set the default location as configured in the App
@@ -175,6 +169,16 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
 
             }
             AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
+        }
+    }
+
+    /**
+     * Display India Timezone as the assumed location
+     */
+    private void showIndiaLocationAssumptionToast() {
+        if (!DateUtils.isIndianTimeZone()) {
+            Toast.makeText(this, "Location information unavailable. Muhurat shall assume Indian Timezone",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
