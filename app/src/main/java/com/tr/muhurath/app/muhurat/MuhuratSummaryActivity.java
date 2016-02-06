@@ -119,14 +119,12 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
 
         //Display Sun Set
         kalHolder = (TextView) findViewById(R.id.txtMuhuraSunSet);
-        msg = "Sun Set  : " + DateUtils.get12HourFormat(calculator.getOfficialSunsetForDate(calendar));
+        msg = "Sun Set   : " + DateUtils.get12HourFormat(calculator.getOfficialSunsetForDate(calendar));
         kalHolder.setText(msg);
         summaryText.append(msg + "<br>");
 
         //Set back button on Tool bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //setShareIntent();
-        Log.d(TAG, "dummy");
     }
 
     private void initShareBtnListener() {

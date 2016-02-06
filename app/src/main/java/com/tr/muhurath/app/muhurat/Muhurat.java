@@ -129,16 +129,21 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                 showLocationDisableAlert();
             }
         }
-        return;
     }
     /**
      * Gather Location Details using Location Service
      */
     private void gatherLocationDetails() {
         // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        } catch (Exception exception) {
+            //IllegalArgumentsException could occur here
+            Log.e(TAG, "gatherLocationDetails - " + exception.getMessage());
+        }
+
         if (locationManager != null) {
-            // Define the criteria how to select the locatioin provider -> use default
+            // Define the criteria how to select the location provider -> use default
             Criteria criteria = new Criteria();
             Log.d(TAG, "Enabled - " + LocationUtil.isLocationEnabled(locationManager));
             if(!LocationUtil.isLocationEnabled(locationManager)) {
@@ -178,6 +183,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         else {
             Log.w(TAG, "gatherLocationDetails - LocationManager Service not enabled");
             AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
+            showLastKnownPermissionToast();
         }
     }
 
