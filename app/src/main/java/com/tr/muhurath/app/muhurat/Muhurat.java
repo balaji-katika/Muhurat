@@ -163,13 +163,14 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             }
         }
         if (location == null) {
-            showLocationUnavailableToast();
+            if (!DateUtils.isIndianTimeZone()) {
+                showLocationUnavailableToast();
+            }
             //Pass an empty string for the provider
             location = new Location("");
             //Set the default location as configured in the App
             location.setLatitude(AppConstants.DEF_LATITUDE);
             location.setLongitude(AppConstants.DEF_LONGITUDE);
-
         }
         //Calling here to log Timezone debug message
         DateUtils.isIndianTimeZone();

@@ -36,9 +36,6 @@ public class AppLogUtils {
             debugBuilder.append(msg);
             debugBuilder.append(DELIMITER);
         }
-        else {
-            Log.d(TAG, msg + " not being tracked since debug not enabled");
-        }
     }
 
     /**
