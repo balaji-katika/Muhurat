@@ -3,13 +3,14 @@ package com.tr.muhurath.app.muhurat.utils;
 import android.util.Log;
 
 /**
- * Created by bkatika on 2/7/16.
+ * Utility for Application Logging
+ * @author  Balaji Katika (balaji.katika@gmail.com) on 2/7/16.
  */
 public class AppLogUtils {
     private static String TAG = AppLogUtils.class.getName();
-    private static StringBuilder debugBuilder = new StringBuilder();
-    private static boolean debugEnabled = true;
-    private static String NEW_LINE = "\n";
+    private static StringBuilder debugBuilder;
+    private static boolean debugEnabled = false;
+    private static String DELIMITER = "; ";
 
     /**
      * Control application debugging
@@ -29,18 +30,32 @@ public class AppLogUtils {
      */
     public static void appendDebug(String msg) {
         if (debugEnabled) {
+            if (debugBuilder == null) {
+                resetDebug();
+            }
             debugBuilder.append(msg);
-            debugBuilder.append(NEW_LINE);
+            debugBuilder.append(DELIMITER);
         }
         else {
             Log.d(TAG, msg + " not being tracked since debug not enabled");
         }
     }
+
+    /**
+     * Reset the debug. Internally re-initialization
+     */
     public static void resetDebug() {
         debugBuilder = new StringBuilder();
     }
 
+    /**
+     * Return the debug message
+     * @return - Message string
+     */
     public static String getDebugMessage() {
-        return debugBuilder.toString();
+        if (debugBuilder != null) {
+            return debugBuilder.toString();
+        }
+        return null;
     }
 }

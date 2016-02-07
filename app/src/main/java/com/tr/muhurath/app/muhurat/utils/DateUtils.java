@@ -2,6 +2,8 @@ package com.tr.muhurath.app.muhurat.utils;
 
 import android.util.Log;
 
+import com.tr.muhurath.app.muhurat.AppConfiguration;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -77,6 +79,7 @@ public class DateUtils {
      */
     public static boolean isIndianTimeZone() {
         String timezone = TimeZone.getDefault().getID();
+        AppLogUtils.appendDebug("TZ = " + timezone);
         for (String ist : AppConstants.IST_TIME_ZONE) {
             if (timezone.equalsIgnoreCase(ist)) {
                 return true;

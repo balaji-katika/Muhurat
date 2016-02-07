@@ -12,6 +12,7 @@ public class AppConfiguration {
     private static final Object _lock = new Object();
     private boolean locationAlertShown = false;
     private boolean locationPermissionAlertShown = false;
+    private boolean unavailableToastShown = false;
     /**
      * Private constructor
      */
@@ -42,7 +43,7 @@ public class AppConfiguration {
      * @param shown - True/False indicating Location Alert shown for the user
      */
     public void setLocationAlertShown(boolean shown) {
-        locationAlertShown = shown;
+        this.locationAlertShown = shown;
     }
 
     /**
@@ -50,7 +51,7 @@ public class AppConfiguration {
      * @return - True if locationAlertShown. False otherwise
      */
     public boolean getLocationAlertShown() {
-        return locationAlertShown;
+        return this.locationAlertShown;
     }
 
     /**
@@ -58,7 +59,7 @@ public class AppConfiguration {
      * @return - True if permissions alert shown. False otherwise
      */
     public boolean getLocationPermissionAlertShown() {
-        return locationPermissionAlertShown;
+        return this.locationPermissionAlertShown;
     }
 
     /**
@@ -77,5 +78,21 @@ public class AppConfiguration {
     public static void setLocation(double longi, double lati) {
         longitude = longi;
         latitude = lati;
+    }
+
+    /**
+     * Is Location Unavailable Toast Shown
+     * @return - True if shown. False otherwise
+     */
+    public boolean isUnavailableToastShown() {
+        return this.unavailableToastShown;
+    }
+
+    /**
+     * Set the value of {@link AppConfiguration#unavailableToastShown}
+     * @param shown - True to enable. False otherwise
+     */
+    public void setUnavailableToastShown(boolean shown) {
+        this.unavailableToastShown = shown;
     }
 }

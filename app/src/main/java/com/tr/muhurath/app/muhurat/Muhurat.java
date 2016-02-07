@@ -19,7 +19,9 @@ import android.content.Context;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import com.tr.muhurath.app.muhurat.utils.ActivityUtil;
 import com.tr.muhurath.app.muhurat.utils.AppConstants;
+import com.tr.muhurath.app.muhurat.utils.AppLogUtils;
 import com.tr.muhurath.app.muhurat.utils.AppMessages;
 import com.tr.muhurath.app.muhurat.utils.DateUtils;
 import com.tr.muhurath.app.muhurat.utils.LocationUtil;
@@ -43,6 +45,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         setSupportActionBar(toolbar);
         addListenterOnCalcButton();
         gatherLocationDetails();
+        showDebugToast();
     }
 
     @Override
@@ -109,7 +112,8 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
      */
     private void displayLocationPermissionsAlert() {
         if (!AppConfiguration.getInstance().getLocationPermissionAlertShown()) {
-           showLastKnownPermissionToast();
+            ActivityUtil.showToast(this, "Permission to use location settings missing for Muhurat. Kindly give permissions");
+            AppConfiguration.getInstance().setLocationPermissionAlertShown(Boolean.TRUE);
         }
     }
 
@@ -118,18 +122,18 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
      */
     private void displayLocationSettingsAlert() {
         if (!AppConfiguration.getInstance().getLocationAlertShown()) {
-            if (DateUtils.isIndianTimeZone()) {
-                showLastKnowLocationToast();
-            } else {
-                showLocationSettingsDialog();
-            }
+            ActivityUtil.showToast(this, "Muhurat uses your last known location by default. Enable Location Settings for accurate result");
+            AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
         }
     }
     /**
      * Gather Location Details using Location Service
      */
     private void gatherLocationDetails() {
-        displayLocationSettingsAlert();
+        Location location = null;
+        if (!DateUtils.isIndianTimeZone()) {
+            displayLocationSettingsAlert();
+        }
         // Get the location manager
         try {
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -142,10 +146,8 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             //Happens for Marshmallow. By default access to system service are disabled
             Log.w(TAG, "gatherLocationDetails - Location Service not accessible");
             displayLocationPermissionsAlert();
-            AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
         }
         else {
-            Location location = null;
             provider = LocationUtil.getBestProvider(locationManager);
             if (provider != null) {
                 try {
@@ -159,26 +161,36 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                     location = null;
                 }
             }
-            if (location == null) {
-                showIndiaLocationAssumptionToast();
-                //Pass an empty string for the provider
-                location = new Location("");
-                //Set the default location as configured in the App
-                location.setLatitude(AppConstants.DEF_LATITUDE);
-                location.setLongitude(AppConstants.DEF_LONGITUDE);
+        }
+        if (location == null) {
+            showLocationUnavailableToast();
+            //Pass an empty string for the provider
+            location = new Location("");
+            //Set the default location as configured in the App
+            location.setLatitude(AppConstants.DEF_LATITUDE);
+            location.setLongitude(AppConstants.DEF_LONGITUDE);
 
-            }
-            AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
+        }
+        //Calling here to log Timezone debug message
+        DateUtils.isIndianTimeZone();
+        AppLogUtils.appendDebug("Long = " + location.getLongitude() + " Lat = " + location.getLatitude());
+        AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
+    }
+
+    private void showDebugToast() {
+        if (AppLogUtils.isDebugEnabled() && AppLogUtils.getDebugMessage() != null) {
+            Toast.makeText(this, AppLogUtils.getDebugMessage(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
     /**
      * Display India Timezone as the assumed location
      */
-    private void showIndiaLocationAssumptionToast() {
-        if (!DateUtils.isIndianTimeZone()) {
-            Toast.makeText(this, "Location information unavailable. Muhurat shall assume Indian Timezone",
-                    Toast.LENGTH_LONG).show();
+    private void showLocationUnavailableToast() {
+        if (!AppConfiguration.getInstance().isUnavailableToastShown()) {
+            ActivityUtil.showToast(this, "Unable to get location information. Muhurat shall assume Indian Timezone");
+            AppConfiguration.getInstance().setUnavailableToastShown(true);
         }
     }
 
@@ -186,23 +198,20 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
      * Show the Toast with permission not given message
      */
     private void showLastKnownPermissionToast() {
-        Toast.makeText(this, "Permission to use location settings missing for Muhurat. Kindly give permissions",
-                Toast.LENGTH_LONG).show();
-        AppConfiguration.getInstance().setLocationPermissionAlertShown(Boolean.TRUE);
+
     }
 
     private void showUnableToAccessLocationSettingsToast() {
         Toast.makeText(this, "Unable to access location settings in your phone",
                 Toast.LENGTH_LONG).show();
-        AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
+        //AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
     }
 
     /**
      * Show the Toast with Location not enabled message
      */
     private void showLastKnowLocationToast() {
-        Toast.makeText(this, "Muhurat uses your last known location by default. Enable Location Settings for accurate result",
-                Toast.LENGTH_LONG).show();
+        ActivityUtil.showToast(this, "Muhurat uses your last known location by default. Enable Location Settings for accurate result");
         AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
     }
 
@@ -305,16 +314,18 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-           // startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }*/
-        if (id == R.id.action_about) {
-            startActivity(new Intent(this, AboutActivity.class));
+        if (id == R.id.action_loc_settings) {
+            ActivityUtil.startSystemActivity(this,
+                    Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+                    AppMessages.MSG_LOC_SETTINGS_UNACCESSIBLE);
             return true;
         }
         else if (id == R.id.action_faq) {
             startActivity(new Intent(this, FAQActivity.class));
+            return true;
+        }
+        else if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 

@@ -11,5 +11,5 @@ public class AppConstants {
     public static final String SUNRISE_SUNSET_TIME_DELIMITER = ":";
     public static final int LOC_MIN_TIME_INTERVAL = 1000;
     public static final int LOC_MIN_DISTANCE = 100;
-    public static final String [] IST_TIME_ZONE = {"Asia/Kolkata", "Asia/Colombo", "IST", "GMT+5:30", "GMT+05:30"};
+    public static final String [] IST_TIME_ZONE = {"Asia/Kolkata", "Asia/Colombo", "IST", "GMT+5:30", "GMT+05:30", "Asia/Calcutta"};
 }

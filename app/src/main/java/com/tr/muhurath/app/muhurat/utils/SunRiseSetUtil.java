@@ -36,7 +36,7 @@ public class SunRiseSetUtil {
      * @return - Date with time specifying the Sun Rise
      */
     public static Date getSunRiseLocationBased(Date date, SunriseSunsetCalculator sunriseSunsetCalculator) {
-        return getOfficialSunSetRise_internal(date, sunriseSunsetCalculator, true);
+        return getSunSetRise_internal(date, sunriseSunsetCalculator, true);
     }
 
     /**
@@ -45,16 +45,12 @@ public class SunRiseSetUtil {
      * @return - Date with time specifying the Sun Rise
      */
     public static Date getSunSetLocationBased(Date date, SunriseSunsetCalculator sunriseSunsetCalculator) {
-        return getOfficialSunSetRise_internal(date, sunriseSunsetCalculator, false);
+        return getSunSetRise_internal(date, sunriseSunsetCalculator, false);
     }
 
-    private static Date getOfficialSunSetRise_internal(Date date, SunriseSunsetCalculator sunriseSunsetCalculator, boolean isSunRise) {
+    private static Date getSunSetRise_internal(Date date, SunriseSunsetCalculator sunriseSunsetCalculator, boolean isSunRise) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        if (isSunRise) {
-            //Log only once
-            logDetails(date, sunriseSunsetCalculator, calendar);
-        }
         String official = null;
         if (isSunRise) {
             official = sunriseSunsetCalculator.getOfficialSunriseForDate(calendar);
@@ -68,7 +64,7 @@ public class SunRiseSetUtil {
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(official_arr[0]));
         cal.set(Calendar.MINUTE, Integer.valueOf(official_arr[1]));
-        cal.set(Calendar.SECOND,00);
+        cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Date ret = cal.getTime();
         return ret;

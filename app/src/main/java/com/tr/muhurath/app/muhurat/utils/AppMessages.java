@@ -11,8 +11,9 @@ public interface AppMessages {
     String MSG_PERMISSION_DLG_MSG = "Location Permissions are not given for Muhurat\n\nSelect '"
             + MSG_ENABLE_PERMISSION
             + "'to modify permissions. Else '" + MSG_IGNORE + "'";
-    String MSG_LOC_ENABLE = "Enable Location";
+    String MSG_LOC_ENABLE = "Location Settings";
     String MSG_LOC_LAST_KNOWN = "Use Last Known";
     String MSG_LOC_DLG_MSG = "Your Locations Settings is set to 'Off'.\n\nSelect '" + MSG_LOC_LAST_KNOWN
             + "' to use last known settings.\nSelect '" + MSG_LOC_ENABLE + "' to enable Location Settings";
+    String MSG_LOC_SETTINGS_UNACCESSIBLE = "Unable to access location settings in your phone";
 }

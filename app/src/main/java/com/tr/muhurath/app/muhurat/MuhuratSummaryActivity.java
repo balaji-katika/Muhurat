@@ -2,6 +2,7 @@ package com.tr.muhurath.app.muhurat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +20,8 @@ import com.tr.muhurath.app.muhurat.kaal.GuliKaal;
 import com.tr.muhurath.app.muhurat.kaal.Kaal;
 import com.tr.muhurath.app.muhurat.kaal.RahuKaal;
 import com.tr.muhurath.app.muhurat.kaal.YamaGandaKaal;
+import com.tr.muhurath.app.muhurat.utils.ActivityUtil;
+import com.tr.muhurath.app.muhurat.utils.AppMessages;
 import com.tr.muhurath.app.muhurat.utils.DateUtils;
 import com.tr.muhurath.app.muhurat.utils.SunRiseSetUtil;
 
@@ -66,7 +69,6 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
         //Date sunRise= SunRiseSetUtil.getSunRise(selectedDate);
         //Date sunSet=SunRiseSetUtil.getSunSet(selectedDate);
         Location loc = new Location(AppConfiguration.latitude, AppConfiguration.longitude);
-        Log.d(TAG, TimeZone.getDefault().getID());
         SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(loc, TimeZone.getDefault().getID());
         Date sunRise = SunRiseSetUtil.getSunRiseLocationBased(selectedDate, calculator);
         Date sunSet = SunRiseSetUtil.getSunSetLocationBased(selectedDate, calculator);
@@ -147,7 +149,6 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
     private void setShareIntent(Intent shareIntent){
         if (shareActionProvider != null) {
             shareActionProvider.setShareIntent(shareIntent);
-            Log.d(TAG, "setShareIntent - Share Action Provider is not null");
         }
         else {
             Log.d(TAG, "setShareIntent - Share Action Provider is null");
@@ -155,8 +156,10 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
     }
 
     /**
+     * TODO: Move this to {@link ActivityUtil}
+     *
      * Create the Share Intent
-     * @return
+     * @return - {@link Intent} instance
      */
     private Intent createShareIntent() {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
@@ -168,7 +171,6 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "Dummy2");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_muhurat_summary, menu);
 
@@ -190,7 +192,13 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about) {
+        if (id == R.id.action_loc_settings) {
+            ActivityUtil.startSystemActivity(this,
+                    Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+                    AppMessages.MSG_LOC_SETTINGS_UNACCESSIBLE);
+            return true;
+        }
+        else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
