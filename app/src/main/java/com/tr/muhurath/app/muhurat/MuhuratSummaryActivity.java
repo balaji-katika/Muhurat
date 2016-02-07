@@ -31,12 +31,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import android.support.v7.widget.ShareActionProvider;
+import android.widget.Toast;
 
+import static android.widget.Toast.LENGTH_LONG;
 /**
  * Activity displaying the Muhurat Summary
+ *
  * Created by Balaji Katika (balaji.katika@gmail.com) on 1/30/16.
  */
-public class MuhuratSummaryActivity extends AppCompatActivity {
+public class MuhuratSummaryActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String LBL_DATE_DISPLAY = "E dd-MMM-yyyy";
     public static final String TAG = MuhuratSummaryActivity.class.getName();
@@ -50,6 +53,8 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_muhurat_summary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //adding listner for help text
+        initHelpIconListners();
 
         initShareBtnListener();
         //Parse the date passed to the activity
@@ -86,42 +91,42 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
 
         //Display Guli Kaal
         kaal = new GuliKaal();
-        kalHolder = (TextView) findViewById(R.id.txtMuhuratGuli);
-        msg = "Gulika : " + kaal.getMuhuratForDisplay(sunRise, sunSet);
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratGuliSummary);
+        msg =  kaal.getMuhuratForDisplay(sunRise, sunSet);
         kalHolder.setText(msg);
-        summaryText.append(msg + "<br>");
+        summaryText.append(getString(R.string.guiliKalaText) + getString(R.string.shareDelimiter)  + msg + "<br>");
 
         //Display Rahu Kaal
         kaal = new RahuKaal();
-        kalHolder = (TextView) findViewById(R.id.txtMuhuratRahu);
-        msg = "Rahu Kaalam : " + kaal.getMuhuratForDisplay(sunRise, sunSet);
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratRahuSummary);
+        msg = kaal.getMuhuratForDisplay(sunRise, sunSet);
         kalHolder.setText(msg);
-        summaryText.append(msg + "<br>");
+        summaryText.append(getString(R.string.rahuKalaText) + getString(R.string.shareDelimiter)  + msg + "<br>");
 
         //Display Yama Kaal
         kaal = new YamaGandaKaal();
-        kalHolder = (TextView) findViewById(R.id.txtMuhuratYama);
-        msg = "Yama Gandam : " + kaal.getMuhuratForDisplay(sunRise, sunSet);
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratYamaSummary);
+        msg = kaal.getMuhuratForDisplay(sunRise, sunSet);
         kalHolder.setText(msg);
-        summaryText.append(msg + "<br>");
+        summaryText.append(getString(R.string.yamaKalaText) + getString(R.string.shareDelimiter) + msg + "<br>");
 
-        kalHolder = (TextView) findViewById(R.id.txtMuhuraShoolam);
-        msg = "Shoolam : " + DateUtils.getShoolamDirection(selectedDate);
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratShoolamSummary);
+        msg =  DateUtils.getShoolamDirection(selectedDate);
         kalHolder.setText(msg);
-        summaryText.append(msg + "<br>");
+        summaryText.append(getString(R.string.shoolamKalaText) + getString(R.string.shareDelimiter) + msg + "<br>");
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(selectedDate);
 
         //Display Sun Rise
-        kalHolder = (TextView) findViewById(R.id.txtMuhuraSunRise);
-        msg = "Sun Rise : " + DateUtils.get12HourFormat(calculator.getOfficialSunriseForDate(calendar));
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratSunRise);
+        msg =  getString(R.string.sunRiseText) + DateUtils.get12HourFormat(calculator.getOfficialSunriseForDate(calendar));
         kalHolder.setText(msg);
         summaryText.append(msg + "<br>");
 
         //Display Sun Set
-        kalHolder = (TextView) findViewById(R.id.txtMuhuraSunSet);
-        msg = "Sun Set   : " + DateUtils.get12HourFormat(calculator.getOfficialSunsetForDate(calendar));
+        kalHolder = (TextView) findViewById(R.id.txtMuhuratSunSet);
+        msg =  getString(R.string.sunSetText) + DateUtils.get12HourFormat(calculator.getOfficialSunsetForDate(calendar));
         kalHolder.setText(msg);
         summaryText.append(msg + "<br>");
 
@@ -129,6 +134,27 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * Initialize HelpIcon Listeners
+     */
+    private void initHelpIconListners() {
+
+        TextView guliTxt = (TextView) findViewById(R.id.txtMuhuratGuli);
+        guliTxt.setOnClickListener(this);
+
+        TextView rahuTxt = (TextView) findViewById(R.id.txtMuhuratRahu);
+        rahuTxt.setOnClickListener(this);
+
+        TextView yamaTxt = (TextView) findViewById(R.id.txtMuhuratYama);
+        yamaTxt.setOnClickListener(this);
+
+        TextView shoolamTxt = (TextView) findViewById(R.id.txtMuhuraShoolam);
+        shoolamTxt.setOnClickListener(this);
+    }
+
+    /**
+     * Initialize Share Button listener
+     */
     private void initShareBtnListener() {
         Button shareBtn = (Button) findViewById(R.id.shareButton);
         shareBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +170,7 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
     }
 
     /**
-     * Set Share Intent for Share toolbar button
+     * Set Share Intent for Share toolbar icon
      */
     private void setShareIntent(Intent shareIntent){
         if (shareActionProvider != null) {
@@ -207,10 +233,31 @@ public class MuhuratSummaryActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.menu_item_share) {
-            Log.d(TAG,"onOptionsItemSelected - share selected");
             setShareIntent(createShareIntent());
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        String helpText = "";
+
+        switch (v.getId()) {
+            case R.id.txtMuhuratGuli:
+                helpText = getString(R.string.about_help_gulika);
+                break;
+            case R.id.txtMuhuratRahu:
+                helpText = getString(R.string.about_help_rahu);
+                break;
+            case R.id.txtMuhuratYama:
+                helpText = getString(R.string.about_help_yama);
+                break;
+            case R.id.txtMuhuraShoolam:
+                helpText = getString(R.string.about_help_shoolam);
+                break;
+        }
+        ActivityUtil.showToast(this, helpText);
     }
 }

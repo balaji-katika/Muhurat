@@ -51,7 +51,7 @@
     "What is Yama Kala?"
     </string>
     <string name="about_faq_yama_ans">
-        "Yamagandam means death time.Only death ceremonies are performed during Yamagandam. Any activity commenced during this time "
+        "Yamagandam means death time. Only death ceremonies are performed during Yamagandam. Any activity commenced during this time "
         "invites the ‘death’ of the work or energies relating to that work. So activities during Yamagandam leads to a failure "
         "or destruction of the end-result. Avoid commencing important, money-related or travel activities, during this time. "
         "Leave your current location or have your meeting, or start your activity earlier than or after the Yamagandam time. "
@@ -64,7 +64,7 @@
     <string name="about_faq_shoolam_ans">
         "Travel from an area of residence or where one has stayed the night, heading in the Shoolam direction, it is believed, "
         "creates a piercing and flowing away of karmic and personal energy in all areas of life and activities. So Shoolam direction "
-        "is to be avoided as the first outbound journey of the day from one’s  home or temporary residence. To counteract Shoolam "
+        "is to be avoided as the first outbound journey of the day from one’s home or temporary residence. To counteract Shoolam "
         "some people avoid all journeys heading towards the Shoolam direction of the day. "
     </string>
     <string name="about_faq_app_qn">
@@ -84,8 +84,6 @@
     </string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_settings">Settings</string>
@@ -151,4 +149,25 @@
     <string name="versionCode">2</string>
     <string name="versionName">1.1</string>
     <string name="title_activity_faq">FAQs</string>
+    <string name="banner_ad_unit_id">ca-app-pub-8897561363168408/9317661370</string>
+    <string name="sunRiseText">"Sun Rise : "</string>
+    <string name="sunSetText">"Sun Set  : "</string>
+    <string name="guiliKalaText">"Guli Kala"</string>
+    <string name="rahuKalaText">"Rahu Kala"</string>
+    <string name="yamaKalaText">"Yama Kala"</string>
+    <string name="shoolamKalaText">"Shoolam"</string>
+    <string name="shareDelimiter">" - "</string>
+    <string name="about_help_gulika">"Any activity carried out during Gulika (Flowering time) period will be repeated once again."
+    "Click on FAQ menu item for more info"
+    </string>
+    <string name="about_help_rahu">"Any activity or journey, whether of short or long distance, initiated or undertaken during "
+        "Rahu(Dragon’s Head) Kaalam is believed to meet a significant degree of failure, lack of success ,delay, postponement or "
+        "no conclusive result. Click on FAQ menu item for more info"
+    </string>
+    <string name="about_help_yama">"Yama gandam means death time. Only death ceremonies are performed during Yamagandam. "
+        "Click on FAQ menu item for more info"
+    </string>
+    <string name="about_help_shoolam">"Shoolam direction is to be avoided as the first outbound journey of the day from one’s "
+        "home or temporary residence. Click on FAQ menu item for more info"
+    </string>
 </resources>
