@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorBackground">#FFC890</color>
     <color name="colorShareButton">#9190ff</color>
+    <color name="colorNote">#FF4000</color>
+    <color name="colorQuestion">#FF00FF</color>
+    <color name="colorAnswer">#170B3B</color>
 </resources>

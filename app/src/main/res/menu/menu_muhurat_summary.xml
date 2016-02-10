@@ -2,11 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tr.muhurath.app.muhurat.Muhurat">
-    <!--<item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_loc_settings"
         android:orderInCategory="101"
@@ -22,4 +17,11 @@
         android:orderInCategory="103"
         android:title="@string/action_about"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_share"
+        android:orderInCategory="104"
+        app:showAsAction="always"
+        android:title="Share"
+        app:actionProviderClass=
+            "android.support.v7.widget.ShareActionProvider" />
 </menu>
