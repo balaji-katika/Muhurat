@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F67D00</color>
+    <color name="colorPrimary">#45a70c</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorBackground">#FFC890</color>
@@ -8,4 +8,7 @@
     <color name="colorNote">#FF4000</color>
     <color name="colorQuestion">#FF00FF</color>
     <color name="colorAnswer">#170B3B</color>
+    <color name="btnColor">#ff7700</color>
+    <color name="btnColorStart">#ff0033</color>
+    <color name="btnColorEnd">#ffdd00</color>
 </resources>

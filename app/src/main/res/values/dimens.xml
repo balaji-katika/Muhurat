@@ -3,8 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="hdr_size">20dp</dimen>
-    <dimen name="lbl_size">25dp</dimen>
+    <dimen name="hdr_size">25sp</dimen>
+    <dimen name="lbl_size">20sp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="add_view_left_padding">15dp</dimen>

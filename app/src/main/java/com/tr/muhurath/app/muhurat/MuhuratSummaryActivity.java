@@ -160,7 +160,7 @@ public class MuhuratSummaryActivity extends AppCompatActivity implements View.On
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent sharingIntent = new Intent(Intent.ACTION_SENDTO);
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/html");
                 sharingIntent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml("<p>Muhurath</p>"));
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>" + summaryText.toString() + "</p>"));
@@ -188,7 +188,7 @@ public class MuhuratSummaryActivity extends AppCompatActivity implements View.On
      * @return - {@link Intent} instance
      */
     private Intent createShareIntent() {
-        Intent sharingIntent = new Intent(Intent.ACTION_SENDTO);
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/html");
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml("<p>Muhurath</p>"));
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>" + summaryText.toString() + "</p>"));
