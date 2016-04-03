@@ -1,21 +1,30 @@
 package com.tr.muhurath.app.muhurat;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.Intent;
+import android.view.View;
 import android.widget.Button;
-import android.content.Context;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
@@ -25,6 +34,9 @@ import com.tr.muhurath.app.muhurat.utils.AppLogUtils;
 import com.tr.muhurath.app.muhurat.utils.AppMessages;
 import com.tr.muhurath.app.muhurat.utils.DateUtils;
 import com.tr.muhurath.app.muhurat.utils.LocationUtil;
+import com.tr.muhurath.app.muhurat.version.CallBack;
+import com.tr.muhurath.app.muhurat.version.RestConnect;
+import com.tr.muhurath.app.muhurat.version.VersionInfo;
 
 /**
  * Main Activity for the Application
@@ -36,10 +48,18 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     private LocationManager locationManager;
     private String provider;
     private String TAG = "Muhurat";
+    private DownloadManager downloadManager;
+    private final String APP_URI = "http://prathyu-p.github.io/app-release.apk";
+    private long downloadReference;
+    DownloadReceiver receiver = new DownloadReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (isNetworkAvailable(this)) {
+            checkVersionUpdate();
+            initDownloadReciever();
+        }
         setContentView(R.layout.activity_muhurat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,6 +67,82 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         gatherLocationDetails();
         showDebugToast();
     }
+
+    private void checkVersionUpdate() {
+        try {
+            final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            RestConnect restCall = new RestConnect(new CallBack<VersionInfo>() {
+                @Override
+                public void onSuccess(VersionInfo versionInfo) {
+                    if (Integer.parseInt(versionInfo.getLatestVersion()) > pInfo.versionCode) {
+                        showAlertDialog();
+                    }
+                }
+            });
+
+            restCall.execute();
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Muhurat.this);
+        builder.setMessage("There is newer version of this application available, click OK to upgrade now?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    //if the user agrees to upgrade
+                    public void onClick(DialogInterface dialog, int id) {
+                        //start downloading the file using the download manager
+                        downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+                        Uri Download_Uri = Uri.parse(APP_URI);
+                        DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
+                        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                        request.setAllowedOverRoaming(false);
+                        request.setTitle("Muhurat App Download");
+                        request.setDestinationInExternalFilesDir(Muhurat.this, Environment.DIRECTORY_DOWNLOADS,"Muhurat.apk");
+                        downloadReference = downloadManager.enqueue(request);
+                    }
+                })
+                .setNegativeButton("Remind Later", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                })
+                .setTitle("Muhurat");
+        //show the alert message
+        builder.create().show();
+    }
+
+    private void initDownloadReciever() {
+        //Broadcast receiver for the download manager
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        registerReceiver(receiver, filter);
+    }
+
+    //check for internet connection
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        //unregister your receivers
+        this.unregisterReceiver(receiver);
+        super.onDestroy();
+    }
+
 
     @Override
     public void onProviderEnabled(String provider) {
@@ -331,5 +427,20 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    class DownloadReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if(downloadReference == referenceId){
+
+                //start the installation of the latest version
+                Intent installIntent = new Intent(Intent.ACTION_VIEW);
+                installIntent.setDataAndType(downloadManager.getUriForDownloadedFile(downloadReference),
+                        "application/vnd.android.package-archive");
+                installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(installIntent);
+            }
+        }
     }
 }
