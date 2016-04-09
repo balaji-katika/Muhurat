@@ -1,12 +1,9 @@
 package com.tr.muhurath.app.muhurat;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +24,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.tr.muhurath.app.muhurat.utils.ActivityUtil;
 import com.tr.muhurath.app.muhurat.utils.AppConstants;
 import com.tr.muhurath.app.muhurat.utils.AppLogUtils;
@@ -40,7 +38,7 @@ import com.tr.muhurath.app.muhurat.version.VersionInfo;
 
 /**
  * Main Activity for the Application
- *
+ * <p>
  * Created by Balaji Katika (balaji.katika@gmail.com) on 1/30/16.
  */
 public class Muhurat extends AppCompatActivity implements LocationListener {
@@ -48,17 +46,12 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
     private LocationManager locationManager;
     private String provider;
     private String TAG = "Muhurat";
-    private DownloadManager downloadManager;
-    private final String APP_URI = "http://prathyu-p.github.io/app-release.apk";
-    private long downloadReference;
-    DownloadReceiver receiver = new DownloadReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (isNetworkAvailable(this)) {
             checkVersionUpdate();
-            initDownloadReciever();
         }
         setContentView(R.layout.activity_muhurat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,6 +59,10 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         addListenterOnCalcButton();
         gatherLocationDetails();
         showDebugToast();
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void checkVersionUpdate() {
@@ -81,8 +78,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             });
 
             restCall.execute();
-        }
-        catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -94,14 +90,12 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                     //if the user agrees to upgrade
                     public void onClick(DialogInterface dialog, int id) {
                         //start downloading the file using the download manager
-                        downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
-                        Uri Download_Uri = Uri.parse(APP_URI);
-                        DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
-                        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                        request.setAllowedOverRoaming(false);
-                        request.setTitle("Muhurat App Download");
-                        request.setDestinationInExternalFilesDir(Muhurat.this, Environment.DIRECTORY_DOWNLOADS,"Muhurat.apk");
-                        downloadReference = downloadManager.enqueue(request);
+                        final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            anfe.printStackTrace();
+                        }
                     }
                 })
                 .setNegativeButton("Remind Later", new DialogInterface.OnClickListener() {
@@ -112,12 +106,6 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                 .setTitle("Muhurat");
         //show the alert message
         builder.create().show();
-    }
-
-    private void initDownloadReciever() {
-        //Broadcast receiver for the download manager
-        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        registerReceiver(receiver, filter);
     }
 
     //check for internet connection
@@ -138,8 +126,6 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
 
     @Override
     public void onDestroy() {
-        //unregister your receivers
-        this.unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -182,11 +168,11 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         super.onPause();
         try {
             locationManager.removeUpdates(this);
-        }
-        catch (SecurityException securityException) {
+        } catch (SecurityException securityException) {
             Log.w(TAG, "onPause - User has not given permission for Location Service");
         }
     }
+
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -194,10 +180,9 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location!=null) {
+        if (location != null) {
             AppConfiguration.setLocation(location.getLongitude(), location.getLatitude());
-        }
-        else {
+        } else {
             Log.d(TAG, "onLocationChanged - Unable to retrieve the last known location");
             AppConfiguration.setLocation(AppConstants.DEF_LONGITUDE, AppConstants.DEF_LATITUDE);
         }
@@ -222,6 +207,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             AppConfiguration.getInstance().setLocationAlertShown(Boolean.TRUE);
         }
     }
+
     /**
      * Gather Location Details using Location Service
      */
@@ -242,17 +228,14 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
             //Happens for Marshmallow. By default access to system service are disabled
             Log.w(TAG, "gatherLocationDetails - Location Service not accessible");
             displayLocationPermissionsAlert();
-        }
-        else {
+        } else {
             provider = LocationUtil.getBestProvider(locationManager);
             if (provider != null) {
                 try {
                     location = locationManager.getLastKnownLocation(provider);
-                }
-                catch (SecurityException securityException) {
+                } catch (SecurityException securityException) {
                     displayLocationPermissionsAlert();
-                }
-                catch (Exception exception){
+                } catch (Exception exception) {
                     //Nothing to do
                     location = null;
                 }
@@ -340,6 +323,7 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
         dialog.show();
         AppConfiguration.getInstance().setLocationPermissionAlertShown(Boolean.TRUE);
     }
+
     /**
      * Display Location Settings alert
      */
@@ -416,31 +400,15 @@ public class Muhurat extends AppCompatActivity implements LocationListener {
                     Settings.ACTION_LOCATION_SOURCE_SETTINGS,
                     AppMessages.MSG_LOC_SETTINGS_UNACCESSIBLE);
             return true;
-        }
-        else if (id == R.id.action_faq) {
+        } else if (id == R.id.action_faq) {
             startActivity(new Intent(this, FAQActivity.class));
             return true;
-        }
-        else if (id == R.id.action_about) {
+        } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-    class DownloadReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            if(downloadReference == referenceId){
 
-                //start the installation of the latest version
-                Intent installIntent = new Intent(Intent.ACTION_VIEW);
-                installIntent.setDataAndType(downloadManager.getUriForDownloadedFile(downloadReference),
-                        "application/vnd.android.package-archive");
-                installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(installIntent);
-            }
-        }
-    }
 }

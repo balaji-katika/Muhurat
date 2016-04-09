@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Muhurat New</string>
+    <string name="app_name">Muhurat</string>
     <string name="app_desc">Find out auspicious timings from your finger tips</string>
     <string name="action_loc_settings">Location Settings</string>
     <string name="action_app_settings">App Settings</string>
@@ -170,4 +170,5 @@
     <string name="about_help_shoolam">"Shoolam direction is to be avoided as the first outbound journey of the day from one’s "
         "home or temporary residence. Click on FAQ menu item for more info"
     </string>
+
 </resources>
